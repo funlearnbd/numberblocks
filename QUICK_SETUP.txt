@@ -1,0 +1,129 @@
+┌──────────────────────────────────────────────────────────────────┐
+│  QUICK IMAGE INTEGRATION GUIDE - 2 MINUTE SETUP                   │
+└──────────────────────────────────────────────────────────────────┘
+
+🎯 SUPER SIMPLE VERSION - Just Follow These 3 Steps:
+
+═══════════════════════════════════════════════════════════════════
+STEP 1: CREATE FOLDER STRUCTURE
+═══════════════════════════════════════════════════════════════════
+
+Put your HTML file and create an images folder:
+
+    📁 your-project-folder/
+    ├── 📄 number-learning-game.html  (the game file)
+    └── 📁 images/
+        └── 📁 numberblocks/
+            ├── 🖼️ 1.png
+            ├── 🖼️ 2.png
+            ├── 🖼️ 3.png
+            ├── 🖼️ 4.png
+            ├── 🖼️ 5.png
+            ├── 🖼️ 6.png
+            ├── 🖼️ 7.png
+            ├── 🖼️ 8.png
+            ├── 🖼️ 9.png
+            └── 🖼️ 10.png
+
+
+═══════════════════════════════════════════════════════════════════
+STEP 2: EDIT ONE LINE IN THE HTML FILE
+═══════════════════════════════════════════════════════════════════
+
+1. Open "number-learning-game.html" in a text editor
+2. Find line ~450 (search for: "function getNumberblockImage")
+3. Replace the ENTIRE function with this:
+
+   function getNumberblockImage(num) {
+       return `images/numberblocks/${num}.png`;
+   }
+
+4. Save the file
+
+
+═══════════════════════════════════════════════════════════════════
+STEP 3: TEST IT!
+═══════════════════════════════════════════════════════════════════
+
+Double-click the HTML file to open in your browser.
+Your Numberblock images should now appear! 🎉
+
+
+═══════════════════════════════════════════════════════════════════
+IMAGE REQUIREMENTS (IMPORTANT!)
+═══════════════════════════════════════════════════════════════════
+
+✅ Format: PNG with transparent background (best)
+✅ Size: 200px - 500px (width and height)
+✅ Names: Must be exactly "1.png", "2.png", etc.
+✅ Location: Must be in "images/numberblocks/" folder
+
+
+═══════════════════════════════════════════════════════════════════
+ALTERNATIVE NAMING STYLES
+═══════════════════════════════════════════════════════════════════
+
+If your images are named differently, update the function:
+
+📌 If named "number-1.png", "number-2.png":
+   return `images/numberblocks/number-${num}.png`;
+
+📌 If named "block_01.png", "block_02.png":
+   return `images/numberblocks/block_0${num}.png`;
+
+📌 If using JPG instead of PNG:
+   return `images/numberblocks/${num}.jpg`;
+
+
+═══════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════
+
+❌ Images not showing?
+
+1. Check folder structure is exactly as shown above
+2. Check image names (1.png not 01.png or number-1.png)
+3. Open browser console (F12) and look for errors
+4. Make sure images are actually PNG/JPG files
+
+
+❌ Still not working?
+
+1. Put ONE test image in the folder
+2. Open HTML file
+3. Press F12 to open developer console
+4. Look for error messages (usually shows wrong path)
+5. Fix the path based on error message
+
+
+═══════════════════════════════════════════════════════════════════
+DON'T HAVE IMAGES YET?
+═══════════════════════════════════════════════════════════════════
+
+No problem! The game works with placeholder images already!
+
+You can:
+✓ Test the game immediately
+✓ Try all the modes
+✓ Share with kids to get feedback
+✓ Add your images later when ready
+
+
+═══════════════════════════════════════════════════════════════════
+NEED TO USE IMAGES FROM GOOGLE DRIVE OR CLOUD?
+═══════════════════════════════════════════════════════════════════
+
+Instead of local files, use URLs:
+
+function getNumberblockImage(num) {
+    return `https://drive.google.com/uc?id=YOUR_FILE_ID_${num}`;
+}
+
+
+═══════════════════════════════════════════════════════════════════
+THAT'S IT! YOU'RE DONE! 🎉
+═══════════════════════════════════════════════════════════════════
+
+The game is now ready to use with your custom Numberblock images!
+
+Questions? Check the full README.md for more details.

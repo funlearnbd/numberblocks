@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FunLearnBD - Number Learning Game (Enhanced)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .lang-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .lang-btn.active {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .lang-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .lang-btn.english { background: #ff6b6b; color: white; }
+        .lang-btn.bangla { background: #4ecdc4; color: white; }
+        .lang-btn.arabic { background: #ffd93d; color: #333; }
+
+        /* Number Range Selector */
+        .range-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .range-btn {
+            padding: 8px 16px;
+            border: 2px solid white;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .range-btn.active {
+            background: white;
+            color: #667eea;
+            transform: scale(1.05);
+        }
+
+        /* Score Board */
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        /* Game Mode Selection */
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .mode-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .mode-card.active {
+            border: 4px solid #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .mode-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .mode-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .mode-desc {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .mode-badge {
+            display: inline-block;
+            background: #ffd93d;
+            color: #333;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Game Area */
+        .game-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            min-height: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .game-area.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Number Display */
+        .number-display {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .numberblock-container {
+            display: inline-block;
+            position: relative;
+            padding: 20px;
+        }
+
+        .numberblock-image {
+            max-width: 300px;
+            max-height: 300px;
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+        }
+
+        .numberblock-image:hover {
+            transform: scale(1.05);
+        }
+
+        /* Uniform sizing - scale images proportionally to their number value */
+        /* Each block should have consistent unit size across all numbers */
+        .numberblock-uniform {
+            /* Base unit size - will scale proportionally */
+            object-fit: contain;
+        }
+
+        /* Scale blocks proportionally so unit size is consistent */
+        .numberblock-uniform[data-number="1"] { max-width: 80px; max-height: 80px; }
+        .numberblock-uniform[data-number="2"] { max-width: 80px; max-height: 160px; }
+        .numberblock-uniform[data-number="3"] { max-width: 80px; max-height: 240px; }
+        .numberblock-uniform[data-number="4"] { max-width: 160px; max-height: 160px; }
+        .numberblock-uniform[data-number="5"] { max-width: 160px; max-height: 160px; }
+        .numberblock-uniform[data-number="6"] { max-width: 240px; max-height: 160px; }
+        .numberblock-uniform[data-number="7"] { max-width: 80px; max-height: 560px; }
+        .numberblock-uniform[data-number="8"] { max-width: 160px; max-height: 320px; }
+        .numberblock-uniform[data-number="9"] { max-width: 240px; max-height: 240px; }
+        .numberblock-uniform[data-number="10"] { max-width: 160px; max-height: 400px; }
+
+        /* In combination displays, use smaller blocks */
+        .combination-display .numberblock-uniform[data-number="1"] { max-width: 60px; max-height: 60px; }
+        .combination-display .numberblock-uniform[data-number="2"] { max-width: 60px; max-height: 120px; }
+        .combination-display .numberblock-uniform[data-number="3"] { max-width: 60px; max-height: 180px; }
+        .combination-display .numberblock-uniform[data-number="4"] { max-width: 120px; max-height: 120px; }
+        .combination-display .numberblock-uniform[data-number="5"] { max-width: 120px; max-height: 120px; }
+        .combination-display .numberblock-uniform[data-number="6"] { max-width: 180px; max-height: 120px; }
+        .combination-display .numberblock-uniform[data-number="7"] { max-width: 60px; max-height: 420px; }
+        .combination-display .numberblock-uniform[data-number="8"] { max-width: 120px; max-height: 240px; }
+        .combination-display .numberblock-uniform[data-number="9"] { max-width: 180px; max-height: 180px; }
+        .combination-display .numberblock-uniform[data-number="10"] { max-width: 120px; max-height: 300px; }
+
+        /* Block Combination Display */
+        .combination-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .combination-display .numberblock-image {
+            max-width: 150px;
+            max-height: 150px;
+        }
+
+        .plus-sign {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .equals-sign {
+            font-size: 3em;
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .number-text {
+            font-size: 6em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .option-btn {
+            padding: 30px;
+            font-size: 3em;
+            font-weight: bold;
+            border: 4px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .option-btn.correct {
+            background: #4ecdc4;
+            color: white;
+            border-color: #4ecdc4;
+            animation: correctPulse 0.5s ease;
+        }
+
+        .option-btn.incorrect {
+            background: #ff6b6b;
+            color: white;
+            border-color: #ff6b6b;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Counting Mode */
+        .counting-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .counting-dots {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 600px;
+        }
+
+        .count-dot {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-center;
+            font-size: 1.5em;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .count-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .count-dot.counted {
+            background: #4ecdc4;
+            transform: scale(0.9);
+        }
+
+        /* Tracing Mode */
+        #tracing-canvas {
+            display: block;
+            margin: 20px auto;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            background: white;
+            cursor: crosshair;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            touch-action: none;
+        }
+
+        .tracing-area {
+            text-align: center;
+        }
+
+        #tracing-canvas {
+            border: 4px dashed #667eea;
+            border-radius: 20px;
+            background: #f8f9fa;
+            cursor: crosshair;
+            touch-action: none;
+            max-width: 100%;
+        }
+
+        .tracing-controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-success {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffd93d;
+            color: #333;
+        }
+
+        /* Feedback Messages */
+        .feedback {
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feedback.show {
+            opacity: 1;
+        }
+
+        .feedback.success {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .feedback.error {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        /* Confetti Animation */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #667eea;
+            position: absolute;
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Home Button */
+        .home-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .home-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .number-text {
+                font-size: 4em;
+            }
+
+            .option-btn {
+                font-size: 2em;
+                padding: 20px;
+            }
+
+            .game-modes {
+                grid-template-columns: 1fr;
+            }
+
+            .count-dot {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+        }
+
+        /* Math Challenge Mode */
+        .math-challenge {
+            text-align: center;
+        }
+
+        .math-equation {
+            font-size: 3em;
+            color: #667eea;
+            margin: 30px 0;
+            font-weight: bold;
+        }
+
+        /* Comparison Mode */
+        .comparison-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .comparison-item {
+            text-align: center;
+        }
+
+        .comparison-symbol {
+            font-size: 4em;
+            color: #667eea;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔢 Number Learning Game</h1>
+            <span class="badge">✨ Enhanced Edition</span>
+            <span class="badge">🎮 9 Game Modes</span>
+            <span class="badge">📊 Numbers 1-20</span>
+            <p style="color: #666; margin-top: 10px;">Learn numbers with fun Numberblocks!</p>
+            
+            <!-- Language Selector -->
+            <div class="language-selector">
+                <button class="lang-btn english active" onclick="changeLanguage('english')">
+                    🇬🇧 English
+                </button>
+                <button class="lang-btn bangla" onclick="changeLanguage('bangla')">
+                    🇧🇩 বাংলা
+                </button>
+                <button class="lang-btn arabic" onclick="changeLanguage('arabic')">
+                    🇸🇦 العربية
+                </button>
+            </div>
+
+            <!-- Number Range Selector -->
+            <div class="range-selector">
+                <button class="range-btn active" onclick="changeRange('1-10')">1-10</button>
+                <button class="range-btn" onclick="changeRange('1-20')">1-20 🆕</button>
+            </div>
+        </div>
+
+        <!-- Score Board -->
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">Score</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Level</div>
+                <div class="score-value" id="level">1</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Streak</div>
+                <div class="score-value" id="streak">0</div>
+            </div>
+        </div>
+
+        <!-- Game Mode Selection -->
+        <div id="mode-selection">
+            <div class="game-modes">
+                <div class="mode-card" onclick="startGame('learn')">
+                    <div class="mode-icon">📚</div>
+                    <div class="mode-title">Learn</div>
+                    <div class="mode-desc">See and hear numbers</div>
+                </div>
+                
+                <div class="mode-card" onclick="startGame('count')">
+                    <div class="mode-icon">👆</div>
+                    <div class="mode-title">Count</div>
+                    <div class="mode-desc">Count the objects</div>
+                </div>
+                
+                <div class="mode-card" onclick="startGame('find')">
+                    <div class="mode-icon">🔍</div>
+                    <div class="mode-title">Find Number</div>
+                    <div class="mode-desc">Find the correct number</div>
+                </div>
+                
+                <div class="mode-card" onclick="startGame('quiz')">
+                    <div class="mode-icon">🎯</div>
+                    <div class="mode-title">Quiz</div>
+                    <div class="mode-desc">Answer questions</div>
+                </div>
+                
+                <div class="mode-card" onclick="startGame('trace')">
+                    <div class="mode-icon">✏️</div>
+                    <div class="mode-title">Trace</div>
+                    <div class="mode-desc">Practice writing</div>
+                </div>
+                
+                <div class="mode-card" onclick="startGame('sequence')">
+                    <div class="mode-icon">🎲</div>
+                    <div class="mode-title">Sequence</div>
+                    <div class="mode-desc">Put in order</div>
+                </div>
+
+                <div class="mode-card" onclick="startGame('addition')">
+                    <div class="mode-icon">➕</div>
+                    <div class="mode-title">Addition</div>
+                    <div class="mode-desc">Simple math</div>
+                    <div class="mode-badge">NEW!</div>
+                </div>
+
+                <div class="mode-card" onclick="startGame('comparison')">
+                    <div class="mode-icon">⚖️</div>
+                    <div class="mode-title">Compare</div>
+                    <div class="mode-desc">Which is bigger?</div>
+                    <div class="mode-badge">NEW!</div>
+                </div>
+
+                <div class="mode-card" onclick="startGame('memory')">
+                    <div class="mode-icon">🧠</div>
+                    <div class="mode-title">Memory</div>
+                    <div class="mode-desc">Remember & match</div>
+                    <div class="mode-badge">NEW!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Area -->
+        <div id="game-area" class="game-area">
+            <div class="controls">
+                <button class="btn btn-warning" onclick="goHome()">🏠 Home</button>
+                <button class="btn btn-primary" onclick="speakNumber()" id="speak-btn">🔊 Listen</button>
+                <button class="btn btn-success" onclick="nextQuestion()" id="next-btn" style="display: none;">Next ➡️</button>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <!-- Dynamic Game Content -->
+            <div id="game-content"></div>
+        </div>
+    </div>
+
+    <button class="home-btn" onclick="goHome()" style="display: none;" id="home-btn-fixed">🏠</button>
+
+    <script>
+        // Game State
+        let currentLanguage = 'english';
+        let currentMode = '';
+        let currentNumber = 1;
+        let currentRange = '1-10';
+        let maxNumber = 10;
+        let score = 0;
+        let level = 1;
+        let streak = 0;
+        let questionsAnswered = 0;
+        let memoryCards = [];
+        let memoryFlipped = [];
+
+        // Number Data
+        const numberData = {
+            english: {
+                numerals: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'],
+                words: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 
+                        'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty']
+            },
+            bangla: {
+                numerals: ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯', '১০', '১১', '১২', '১৩', '১৪', '১৫', '১৬', '১৭', '১৮', '১৯', '২০'],
+                words: ['শূন্য', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ',
+                        'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ']
+            },
+            arabic: {
+                numerals: ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩', '١٠', '١١', '١٢', '١٣', '١٤', '١٥', '١٦', '١٧', '١٨', '١٩', '٢٠'],
+                words: ['صفر', 'واحد', 'اثنان', 'ثلاثة', 'أربعة', 'خمسة', 'ستة', 'سبعة', 'ثمانية', 'تسعة', 'عشرة',
+                        'أحد عشر', 'اثنا عشر', 'ثلاثة عشر', 'أربعة عشر', 'خمسة عشر', 'ستة عشر', 'سبعة عشر', 'ثمانية عشر', 'تسعة عشر', 'عشرون']
+            }
+        };
+
+        // Numberblock Images with UNIFORM unit sizing
+        function getNumberblockImage(num) {
+            // For uniform sizing, we'll use CSS to standardize
+            return `images/numberblocks/${num}.png`;
+        }
+
+        // Get combination for numbers 11-20
+        function getNumberCombination(num) {
+            if (num <= 10) return [num];
+            
+            // For 11-20, decompose into tens and ones
+            const tens = Math.floor(num / 10) * 10;
+            const ones = num % 10;
+            
+            if (ones === 0) {
+                return [10]; // Just 10 for 10, 20
+            } else {
+                return [10, ones]; // e.g., 15 = [10, 5]
+            }
+        }
+
+        // Display number with combination AND uniform sizing
+        function displayNumberWithCombination(num) {
+            const combo = getNumberCombination(num);
+            
+            if (combo.length === 1) {
+                return `
+                    <div class="numberblock-container">
+                        <img src="${getNumberblockImage(combo[0])}" 
+                             class="numberblock-image numberblock-uniform" 
+                             onclick="speakNumber()"
+                             alt="Number ${num}"
+                             data-number="${combo[0]}">
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="combination-display">
+                        <div class="numberblock-container">
+                            <img src="${getNumberblockImage(combo[0])}" 
+                                 class="numberblock-image numberblock-uniform" 
+                                 alt="Number ${combo[0]}"
+                                 data-number="${combo[0]}">
+                        </div>
+                        <span class="plus-sign">+</span>
+                        <div class="numberblock-container">
+                            <img src="${getNumberblockImage(combo[1])}" 
+                                 class="numberblock-image numberblock-uniform" 
+                                 alt="Number ${combo[1]}"
+                                 data-number="${combo[1]}">
+                        </div>
+                        <span class="equals-sign">=</span>
+                        <div class="number-text">${numberData[currentLanguage].numerals[num]}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Change Range
+        function changeRange(range) {
+            currentRange = range;
+            maxNumber = range === '1-10' ? 10 : 20;
+            
+            document.querySelectorAll('.range-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (currentMode) {
+                loadGameMode(currentMode);
+            }
+            
+            playSound('click');
+        }
+
+        // Language Change
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.lang-btn.${lang}`).classList.add('active');
+            
+            if (currentMode) {
+                refreshGameContent();
+            }
+            
+            playSound('click');
+        }
+
+        // Start Game Mode
+        function startGame(mode) {
+            currentMode = mode;
+            // Learn mode starts at 1, other modes use random
+            currentNumber = (mode === 'learn') ? 1 : Math.floor(Math.random() * maxNumber) + 1;
+            questionsAnswered = 0;
+            
+            document.getElementById('mode-selection').style.display = 'none';
+            document.getElementById('game-area').classList.add('active');
+            document.getElementById('home-btn-fixed').style.display = 'block';
+            
+            loadGameMode(mode);
+            playSound('start');
+        }
+
+        // Go Home
+        function goHome() {
+            document.getElementById('mode-selection').style.display = 'block';
+            document.getElementById('game-area').classList.remove('active');
+            document.getElementById('home-btn-fixed').style.display = 'none';
+            currentMode = '';
+            questionsAnswered = 0; // Reset progression
+            playSound('click');
+        }
+
+        // Load Game Mode
+        function loadGameMode(mode) {
+            const content = document.getElementById('game-content');
+            
+            switch(mode) {
+                case 'learn':
+                    loadLearnMode(content);
+                    break;
+                case 'count':
+                    loadCountMode(content);
+                    break;
+                case 'find':
+                    loadFindMode(content);
+                    break;
+                case 'quiz':
+                    loadQuizMode(content);
+                    break;
+                case 'trace':
+                    loadTraceMode(content);
+                    break;
+                case 'sequence':
+                    loadSequenceMode(content);
+                    break;
+                case 'addition':
+                    loadAdditionMode(content);
+                    break;
+                case 'comparison':
+                    loadComparisonMode(content);
+                    break;
+                case 'memory':
+                    loadMemoryMode(content);
+                    break;
+            }
+        }
+
+        // Learn Mode
+        function loadLearnMode(content) {
+            content.innerHTML = `
+                <div class="number-display">
+                    ${displayNumberWithCombination(currentNumber)}
+                    <div style="font-size: 2em; color: #666; margin-top: 20px;">
+                        ${numberData[currentLanguage].words[currentNumber]}
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="previousNumber()">⬅️ Previous</button>
+                    <button class="btn btn-success" onclick="nextNumber()">Next ➡️</button>
+                </div>
+            `;
+            
+            // Speak the number
+            setTimeout(() => {
+                speakNumber();
+            }, 300);
+        }
+
+        function previousNumber() {
+            currentNumber = currentNumber > 1 ? currentNumber - 1 : maxNumber;
+            loadLearnMode(document.getElementById('game-content'));
+            playSound('click');
+        }
+
+        function nextNumber() {
+            currentNumber = currentNumber < maxNumber ? currentNumber + 1 : 1;
+            loadLearnMode(document.getElementById('game-content'));
+            playSound('click');
+        }
+
+        // Count Mode
+        function loadCountMode(content) {
+            // Start with easier numbers (1-5) for first few questions, then increase
+            let maxCount;
+            if (questionsAnswered < 3) {
+                maxCount = 5; // First 3 questions: 1-5
+            } else if (questionsAnswered < 6) {
+                maxCount = Math.min(8, maxNumber); // Next 3: up to 8
+            } else {
+                maxCount = maxNumber; // After that: full range
+            }
+            
+            const targetNumber = Math.floor(Math.random() * maxCount) + 1;
+            
+            let dotsHTML = '<div class="counting-area">';
+            dotsHTML += `<h2 style="color: #667eea;">Count the dots!</h2>`;
+            dotsHTML += '<div class="counting-dots">';
+            
+            for (let i = 0; i < targetNumber; i++) {
+                dotsHTML += `<div class="count-dot" onclick="countDot(this, ${targetNumber})">${i + 1}</div>`;
+            }
+            
+            dotsHTML += '</div>';
+            dotsHTML += `<div class="number-text" id="count-display">0</div>`;
+            dotsHTML += '</div>';
+            
+            content.innerHTML = dotsHTML;
+            content.dataset.target = targetNumber;
+            content.dataset.counted = 0;
+            
+            // Speak the instruction
+            setTimeout(() => {
+                speakInstruction('Count the dots. Tap each one!');
+            }, 500);
+        }
+
+        function countDot(element, target) {
+            if (element.classList.contains('counted')) return;
+            
+            element.classList.add('counted');
+            const content = document.getElementById('game-content');
+            let counted = parseInt(content.dataset.counted) + 1;
+            content.dataset.counted = counted;
+            
+            document.getElementById('count-display').textContent = counted;
+            
+            // Speak the number in selected language
+            speakSpecificNumber(counted);
+            playSound('pop');
+            
+            if (counted === target) {
+                setTimeout(() => {
+                    showFeedback('Excellent! 🎉', 'success');
+                    speakFeedback('Excellent! Well done!');
+                    updateScore(10);
+                    setTimeout(() => loadCountMode(content), 2000);
+                }, 500);
+            }
+        }
+
+        // Find Number Mode
+        function loadFindMode(content) {
+            const target = Math.floor(Math.random() * maxNumber) + 1;
+            const options = generateOptions(target, 4);
+            
+            let html = '<div class="number-display">';
+            html += `<h2 style="color: #667eea; margin-bottom: 30px;">Find number: ${numberData[currentLanguage].numerals[target]}</h2>`;
+            html += '<div class="options-grid">';
+            
+            options.forEach(num => {
+                const combo = getNumberCombination(num);
+                if (combo.length === 1) {
+                    html += `<div class="numberblock-container">
+                        <img src="${getNumberblockImage(num)}" 
+                             class="numberblock-image numberblock-uniform" 
+                             onclick="checkAnswerWithVoice(${num}, ${target}, 'find')"
+                             style="cursor: pointer;"
+                             data-number="${num}"
+                             alt="Number ${num}">
+                    </div>`;
+                } else {
+                    html += `<div onclick="checkAnswerWithVoice(${num}, ${target}, 'find')" style="cursor: pointer;">
+                        <div style="display: flex; align-items: center; gap: 5px; justify-content: center;">
+                            <img src="${getNumberblockImage(combo[0])}" 
+                                 class="numberblock-uniform" 
+                                 data-number="${combo[0]}"
+                                 style="max-width: 50px;">
+                            <span style="font-size: 1.5em;">+</span>
+                            <img src="${getNumberblockImage(combo[1])}" 
+                                 class="numberblock-uniform" 
+                                 data-number="${combo[1]}"
+                                 style="max-width: 50px;">
+                        </div>
+                    </div>`;
+                }
+            });
+            
+            html += '</div></div>';
+            content.innerHTML = html;
+            
+            // Speak the instruction
+            setTimeout(() => {
+                speakInstruction(`Find number ${numberData[currentLanguage].words[target]}`);
+            }, 500);
+        }
+
+        // Quiz Mode
+        function loadQuizMode(content) {
+            const target = Math.floor(Math.random() * maxNumber) + 1;
+            const options = generateOptions(target, 4);
+            
+            let html = '<div class="number-display">';
+            html += displayNumberWithCombination(target);
+            html += `<h2 style="color: #667eea; margin-top: 20px;">Which number is this?</h2>`;
+            html += '<div class="options-grid">';
+            
+            options.forEach(num => {
+                html += `<button class="option-btn" onclick="checkAnswerWithVoice(${num}, ${target}, 'quiz')">
+                    ${numberData[currentLanguage].numerals[num]}
+                </button>`;
+            });
+            
+            html += '</div></div>';
+            content.innerHTML = html;
+            
+            // Speak the question WITHOUT the answer
+            setTimeout(() => {
+                speakInstruction('Which number is this?');
+            }, 500);
+        }
+
+        // Trace Mode
+        function loadTraceMode(content) {
+            const canvas = document.createElement('canvas');
+            canvas.id = 'tracing-canvas';
+            canvas.width = 400;
+            canvas.height = 400;
+            canvas.style.border = '3px solid #667eea';
+            canvas.style.borderRadius = '15px';
+            canvas.style.background = 'white';
+            canvas.style.cursor = 'crosshair';
+            
+            content.innerHTML = `
+                <div class="tracing-area">
+                    <h2 style="color: #667eea; margin-bottom: 20px;">
+                        Trace the number: ${numberData[currentLanguage].numerals[currentNumber]}
+                    </h2>
+                    <p style="color: #666; margin-bottom: 15px; font-size: 1.1em;">
+                        <strong>Click and drag</strong> to draw!<br>
+                        <small>(Works with mouse, trackpad, or touch)</small>
+                    </p>
+                </div>
+            `;
+            
+            content.querySelector('.tracing-area').appendChild(canvas);
+            
+            content.querySelector('.tracing-area').innerHTML += `
+                <div class="tracing-controls">
+                    <button class="btn btn-danger" onclick="clearCanvas()">🗑️ Clear</button>
+                    <button class="btn btn-success" onclick="nextTraceNumber()">Next Number ➡️</button>
+                </div>
+            `;
+            
+            // Draw the guide first
+            drawNumberGuide(canvas, currentNumber);
+            
+            // Then initialize drawing
+            initCanvas(canvas);
+            
+            // Speak the instruction
+            setTimeout(() => {
+                speakInstruction(`Trace the number ${numberData[currentLanguage].words[currentNumber]}`);
+            }, 500);
+        }
+
+        function initCanvas(canvas) {
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+
+            // Store the guide layer
+            window.guideCanvas = document.createElement('canvas');
+            window.guideCanvas.width = canvas.width;
+            window.guideCanvas.height = canvas.height;
+            const guideCtx = window.guideCanvas.getContext('2d');
+            
+            // Copy current canvas (with guide) to guide layer
+            guideCtx.drawImage(canvas, 0, 0);
+
+            // Store user's drawing
+            window.userDrawing = document.createElement('canvas');
+            window.userDrawing.width = canvas.width;
+            window.userDrawing.height = canvas.height;
+            const userCtx = window.userDrawing.getContext('2d');
+            userCtx.strokeStyle = '#667eea';
+            userCtx.lineWidth = 15;
+            userCtx.lineCap = 'round';
+            userCtx.lineJoin = 'round';
+
+            function getPosition(e) {
+                const rect = canvas.getBoundingClientRect();
+                let clientX, clientY;
+                
+                if (e.touches && e.touches.length > 0) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+
+            function redrawCanvas() {
+                // Clear main canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Draw guide
+                ctx.drawImage(window.guideCanvas, 0, 0);
+                // Draw user's drawing on top
+                ctx.drawImage(window.userDrawing, 0, 0);
+            }
+
+            function startDrawing(e) {
+                e.preventDefault();
+                isDrawing = true;
+                const pos = getPosition(e);
+                lastX = pos.x;
+                lastY = pos.y;
+                
+                // Start new path on user layer
+                userCtx.beginPath();
+                userCtx.moveTo(lastX, lastY);
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+                
+                const pos = getPosition(e);
+
+                // Draw on user layer
+                userCtx.lineTo(pos.x, pos.y);
+                userCtx.stroke();
+
+                // Redraw everything
+                redrawCanvas();
+
+                lastX = pos.x;
+                lastY = pos.y;
+            }
+
+            function stopDrawing(e) {
+                if (isDrawing) {
+                    isDrawing = false;
+                    playSound('pop');
+                }
+            }
+
+            // Mouse events (for trackpad and mouse)
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseleave', stopDrawing);
+
+            // Touch events (for touch screens)
+            canvas.addEventListener('touchstart', startDrawing);
+            canvas.addEventListener('touchmove', draw);
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function drawNumberGuide(canvas, num) {
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw the guide number
+            ctx.font = 'bold 300px Arial';
+            ctx.fillStyle = 'rgba(102, 126, 234, 0.15)';
+            ctx.strokeStyle = 'rgba(102, 126, 234, 0.3)';
+            ctx.lineWidth = 3;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const text = numberData[currentLanguage].numerals[num];
+            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+            ctx.strokeText(text, canvas.width / 2, canvas.height / 2);
+        }
+
+        function clearCanvas() {
+            const canvas = document.getElementById('tracing-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                
+                // Clear main canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Redraw guide
+                drawNumberGuide(canvas, currentNumber);
+                
+                // Update guide layer
+                if (window.guideCanvas) {
+                    const guideCtx = window.guideCanvas.getContext('2d');
+                    guideCtx.clearRect(0, 0, window.guideCanvas.width, window.guideCanvas.height);
+                    guideCtx.drawImage(canvas, 0, 0);
+                }
+                
+                // Clear user's drawing layer
+                if (window.userDrawing) {
+                    const userCtx = window.userDrawing.getContext('2d');
+                    userCtx.clearRect(0, 0, window.userDrawing.width, window.userDrawing.height);
+                }
+                
+                playSound('click');
+            }
+        }
+
+        function nextTraceNumber() {
+            currentNumber = (currentNumber % maxNumber) + 1;
+            loadTraceMode(document.getElementById('game-content'));
+            updateScore(5);
+        }
+
+
+        // Sequence Mode
+        function loadSequenceMode(content) {
+            const start = Math.floor(Math.random() * (maxNumber - 3)) + 1;
+            const sequence = [start, start + 1, start + 2, start + 3];
+            const shuffled = [...sequence].sort(() => Math.random() - 0.5);
+            
+            let html = '<div class="number-display">';
+            html += '<h2 style="color: #667eea; margin-bottom: 30px;">Put the numbers in order!</h2>';
+            html += '<div class="options-grid" id="sequence-container">';
+            
+            shuffled.forEach(num => {
+                html += `<button class="option-btn" onclick="selectSequence(this, ${num})" data-number="${num}">
+                    ${numberData[currentLanguage].numerals[num]}
+                </button>`;
+            });
+            
+            html += '</div>';
+            html += '<div style="margin-top: 30px;"><button class="btn btn-success" onclick="checkSequence([${sequence}])">Check Order ✅</button></div>';
+            html += '</div>';
+            
+            content.innerHTML = html;
+            content.dataset.selectedOrder = '[]';
+            
+            // Speak the instruction
+            setTimeout(() => {
+                speakInstruction('Put the numbers in order from smallest to biggest');
+            }, 500);
+        }
+
+        function selectSequence(btn, num) {
+            const content = document.getElementById('game-content');
+            let order = JSON.parse(content.dataset.selectedOrder || '[]');
+            
+            if (btn.classList.contains('selected')) {
+                btn.classList.remove('selected');
+                btn.style.opacity = '1';
+                order = order.filter(n => n !== num);
+            } else {
+                btn.classList.add('selected');
+                btn.style.opacity = '0.5';
+                order.push(num);
+            }
+            
+            content.dataset.selectedOrder = JSON.stringify(order);
+            playSound('click');
+        }
+
+        function checkSequence(correctOrder) {
+            const content = document.getElementById('game-content');
+            const selectedOrder = JSON.parse(content.dataset.selectedOrder || '[]');
+            
+            if (selectedOrder.length !== correctOrder.length) {
+                showFeedback('Please select all numbers!', 'error');
+                speakFeedback('Please select all numbers');
+                return;
+            }
+            
+            const isCorrect = selectedOrder.every((num, i) => num === correctOrder[i]);
+            
+            if (isCorrect) {
+                showFeedback('Perfect! 🎉', 'success');
+                speakFeedback('Perfect! Well done!');
+                updateScore(20);
+                setTimeout(() => loadSequenceMode(content), 2000);
+            } else {
+                showFeedback('Try again! 🤔', 'error');
+                speakFeedback('Not quite right. Try again!');
+                content.dataset.selectedOrder = '[]';
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                    btn.style.opacity = '1';
+                });
+            }
+        }
+
+        // NEW: Addition Mode
+        function loadAdditionMode(content) {
+            const num1 = Math.floor(Math.random() * (maxNumber / 2)) + 1;
+            const num2 = Math.floor(Math.random() * (maxNumber / 2)) + 1;
+            const answer = num1 + num2;
+            const options = generateOptions(answer, 4);
+            
+            let html = '<div class="math-challenge">';
+            html += '<h2 style="color: #667eea; margin-bottom: 30px;">Add these numbers!</h2>';
+            html += '<div class="combination-display" id="addition-display">';
+            html += `<div class="numberblock-container">
+                <img src="${getNumberblockImage(num1)}" 
+                     class="numberblock-image numberblock-uniform" 
+                     data-number="${num1}">
+            </div>`;
+            html += '<span class="plus-sign">+</span>';
+            html += `<div class="numberblock-container">
+                <img src="${getNumberblockImage(num2)}" 
+                     class="numberblock-image numberblock-uniform" 
+                     data-number="${num2}">
+            </div>`;
+            html += '<span class="equals-sign">=</span>';
+            html += '<span style="font-size: 4em; color: #667eea;">?</span>';
+            html += '</div>';
+            
+            html += '<div class="options-grid">';
+            options.forEach(num => {
+                html += `<button class="option-btn" onclick="checkAdditionAnswer(${num}, ${answer}, ${num1}, ${num2})">
+                    ${numberData[currentLanguage].numerals[num]}
+                </button>`;
+            });
+            html += '</div></div>';
+            
+            content.innerHTML = html;
+            
+            // Speak the question
+            setTimeout(() => {
+                speakInstruction(`What is ${numberData[currentLanguage].words[num1]} plus ${numberData[currentLanguage].words[num2]}?`);
+            }, 500);
+        }
+
+        function checkAdditionAnswer(selected, correct, num1, num2) {
+            const isCorrect = selected === correct;
+            
+            if (isCorrect) {
+                // Show the answer in numberblocks with uniform sizing!
+                const displayDiv = document.getElementById('addition-display');
+                displayDiv.innerHTML = `
+                    <div class="numberblock-container">
+                        <img src="${getNumberblockImage(num1)}" 
+                             class="numberblock-image numberblock-uniform" 
+                             data-number="${num1}">
+                    </div>
+                    <span class="plus-sign">+</span>
+                    <div class="numberblock-container">
+                        <img src="${getNumberblockImage(num2)}" 
+                             class="numberblock-image numberblock-uniform" 
+                             data-number="${num2}">
+                    </div>
+                    <span class="equals-sign">=</span>
+                    ${displayNumberWithCombination(correct)}
+                `;
+                
+                showFeedback('Excellent! 🎉', 'success');
+                speakFeedback('Excellent! Well done!');
+                updateScore(10);
+                createConfetti();
+                playSound('correct');
+                
+                // Wait longer to show the result
+                setTimeout(() => {
+                    loadGameMode(currentMode);
+                }, 3000);
+            } else {
+                showFeedback('Try again! 🤔', 'error');
+                speakFeedback('Try again!');
+                streak = 0;
+                updateStreak();
+                playSound('wrong');
+            }
+        }
+
+        // NEW: Comparison Mode
+        function loadComparisonMode(content) {
+            const num1 = Math.floor(Math.random() * maxNumber) + 1;
+            let num2 = Math.floor(Math.random() * maxNumber) + 1;
+            while (num2 === num1) {
+                num2 = Math.floor(Math.random() * maxNumber) + 1;
+            }
+            
+            const larger = Math.max(num1, num2);
+            
+            let html = '<div class="number-display">';
+            html += '<h2 style="color: #667eea; margin-bottom: 30px;">Which number is BIGGER?</h2>';
+            html += '<div class="comparison-display">';
+            
+            html += `<div class="comparison-item" onclick="checkAnswerWithVoice(${num1}, ${larger}, 'compare')" style="cursor: pointer;">
+                ${displayNumberWithCombination(num1)}
+            </div>`;
+            
+            html += '<div class="comparison-symbol">VS</div>';
+            
+            html += `<div class="comparison-item" onclick="checkAnswerWithVoice(${num2}, ${larger}, 'compare')" style="cursor: pointer;">
+                ${displayNumberWithCombination(num2)}
+            </div>`;
+            
+            html += '</div></div>';
+            
+            content.innerHTML = html;
+            
+            // Speak the question
+            setTimeout(() => {
+                speakInstruction(`Which number is bigger? ${numberData[currentLanguage].words[num1]} or ${numberData[currentLanguage].words[num2]}?`);
+            }, 500);
+        }
+
+        // NEW: Memory Mode
+        function loadMemoryMode(content) {
+            const numPairs = Math.min(6, Math.floor(maxNumber / 2));
+            memoryCards = [];
+            memoryFlipped = [];
+            
+            // Generate pairs
+            const numbers = [];
+            for (let i = 0; i < numPairs; i++) {
+                const num = Math.floor(Math.random() * maxNumber) + 1;
+                numbers.push(num, num);
+            }
+            
+            // Shuffle
+            numbers.sort(() => Math.random() - 0.5);
+            
+            let html = '<div class="number-display">';
+            html += '<h2 style="color: #667eea; margin-bottom: 30px;">Match the pairs!</h2>';
+            html += '<div class="options-grid" style="max-width: 600px; margin: 0 auto;">';
+            
+            numbers.forEach((num, index) => {
+                html += `<div class="option-btn" onclick="flipMemoryCard(${index}, ${num})" id="memory-${index}" 
+                         style="font-size: 2em; background: #667eea; color: white;">❓</div>`;
+                memoryCards.push({number: num, flipped: false, matched: false});
+            });
+            
+            html += '</div></div>';
+            content.innerHTML = html;
+            
+            // Speak the instruction
+            setTimeout(() => {
+                speakInstruction('Match the pairs! Tap the cards to flip them.');
+            }, 500);
+        }
+
+        function flipMemoryCard(index, num) {
+            if (memoryCards[index].flipped || memoryCards[index].matched || memoryFlipped.length >= 2) return;
+            
+            const card = document.getElementById(`memory-${index}`);
+            card.textContent = numberData[currentLanguage].numerals[num];
+            card.style.background = 'white';
+            card.style.color = '#667eea';
+            
+            // Speak the number
+            speakSpecificNumber(num);
+            
+            memoryCards[index].flipped = true;
+            memoryFlipped.push(index);
+            
+            if (memoryFlipped.length === 2) {
+                const [first, second] = memoryFlipped;
+                
+                setTimeout(() => {
+                    if (memoryCards[first].number === memoryCards[second].number) {
+                        memoryCards[first].matched = true;
+                        memoryCards[second].matched = true;
+                        document.getElementById(`memory-${first}`).style.background = '#4ecdc4';
+                        document.getElementById(`memory-${second}`).style.background = '#4ecdc4';
+                        playSound('correct');
+                        speakFeedback('Great match!');
+                        updateScore(15);
+                        
+                        // Check if all matched
+                        if (memoryCards.every(c => c.matched)) {
+                            setTimeout(() => {
+                                showFeedback('All matched! 🎉', 'success');
+                                speakFeedback('Excellent! You matched them all!');
+                                setTimeout(() => loadMemoryMode(document.getElementById('game-content')), 2000);
+                            }, 500);
+                        }
+                    } else {
+                        document.getElementById(`memory-${first}`).textContent = '❓';
+                        document.getElementById(`memory-${first}`).style.background = '#667eea';
+                        document.getElementById(`memory-${first}`).style.color = 'white';
+                        document.getElementById(`memory-${second}`).textContent = '❓';
+                        document.getElementById(`memory-${second}`).style.background = '#667eea';
+                        document.getElementById(`memory-${second}`).style.color = 'white';
+                        memoryCards[first].flipped = false;
+                        memoryCards[second].flipped = false;
+                        speakFeedback('Not a match. Try again!');
+                    }
+                    
+                    memoryFlipped = [];
+                }, 1000);
+            }
+        }
+
+        // Helper Functions
+        function generateOptions(correct, count) {
+            const options = [correct];
+            while (options.length < count) {
+                const num = Math.floor(Math.random() * maxNumber) + 1;
+                if (!options.includes(num)) {
+                    options.push(num);
+                }
+            }
+            return options.sort(() => Math.random() - 0.5);
+        }
+
+        function checkAnswer(selected, correct) {
+            const isCorrect = selected === correct;
+            
+            if (isCorrect) {
+                showFeedback('Excellent! 🎉', 'success');
+                updateScore(10);
+                createConfetti();
+                playSound('correct');
+                
+                setTimeout(() => {
+                    loadGameMode(currentMode);
+                }, 1500);
+            } else {
+                showFeedback('Try again! 🤔', 'error');
+                streak = 0;
+                updateStreak();
+                playSound('wrong');
+            }
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = `feedback ${type} show`;
+            
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 2000);
+        }
+
+        function updateScore(points) {
+            score += points;
+            streak++;
+            questionsAnswered++;
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+            
+            if (questionsAnswered % 5 === 0) {
+                level++;
+                document.getElementById('level').textContent = level;
+            }
+        }
+
+        function updateStreak() {
+            document.getElementById('streak').textContent = streak;
+        }
+
+        function refreshGameContent() {
+            if (currentMode) {
+                loadGameMode(currentMode);
+            }
+        }
+
+        function nextQuestion() {
+            loadGameMode(currentMode);
+        }
+
+        // Audio Functions
+        function speakNumber() {
+            const text = numberData[currentLanguage].words[currentNumber];
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                switch(currentLanguage) {
+                    case 'bangla':
+                        utterance.lang = 'bn-BD';
+                        break;
+                    case 'arabic':
+                        utterance.lang = 'ar-SA';
+                        break;
+                    default:
+                        utterance.lang = 'en-US';
+                }
+                
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+            
+            playSound('speak');
+        }
+
+        function speakSpecificNumber(num) {
+            if (num > maxNumber) return;
+            
+            const text = numberData[currentLanguage].words[num];
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                switch(currentLanguage) {
+                    case 'bangla':
+                        utterance.lang = 'bn-BD';
+                        break;
+                    case 'arabic':
+                        utterance.lang = 'ar-SA';
+                        break;
+                    default:
+                        utterance.lang = 'en-US';
+                }
+                
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function speakInstruction(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                switch(currentLanguage) {
+                    case 'bangla':
+                        utterance.lang = 'bn-BD';
+                        break;
+                    case 'arabic':
+                        utterance.lang = 'ar-SA';
+                        break;
+                    default:
+                        utterance.lang = 'en-US';
+                }
+                
+                utterance.rate = 0.9;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function speakFeedback(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 1.0;
+                utterance.pitch = 1.2;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function checkAnswerWithVoice(selected, correct, mode) {
+            const isCorrect = selected === correct;
+            
+            if (isCorrect) {
+                showFeedback('Excellent! 🎉', 'success');
+                // Don't speak the number in compare mode
+                if (mode === 'compare') {
+                    speakFeedback('Excellent! That is correct!');
+                } else {
+                    speakFeedback('Excellent! Well done!');
+                }
+                updateScore(10);
+                createConfetti();
+                playSound('correct');
+                
+                setTimeout(() => {
+                    loadGameMode(currentMode);
+                }, 2000);
+            } else {
+                showFeedback('Try again! 🤔', 'error');
+                speakFeedback('Try again!');
+                streak = 0;
+                updateStreak();
+                playSound('wrong');
+            }
+        }
+
+        function playSound(type) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            const frequencies = {
+                'click': 400,
+                'correct': 800,
+                'wrong': 200,
+                'pop': 600,
+                'start': 500,
+                'speak': 700
+            };
+            
+            oscillator.frequency.value = frequencies[type] || 400;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        // Confetti Effect
+        function createConfetti() {
+            const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe'];
+            
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 0.3 + 's';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Number Learning Game Enhanced Ready!');
+        });
+    </script>
+</body>
+</html>
